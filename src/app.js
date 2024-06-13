@@ -1,11 +1,9 @@
 const express = require('express');
 const multer = require('multer');
 const tf = require('@tensorflow/tfjs-node');
-const sharp = require('sharp');
-const axios = require('axios');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 let model;
 
@@ -18,7 +16,7 @@ const upload = multer({
 // Load the TFLite model
 async function loadModel() {
     try {
-        model = await tf.loadLayersModel('https://storage.googleapis.com/rempahpedia-image-repository/model/model.json');
+        model = await tf.loadGraphModel('https://storage.googleapis.com/rempahpedia-image-repository/model/model.json');
         console.log('Model loaded successfully.');
     } catch (error) {
         console.error('Error loading model:', error);
@@ -30,6 +28,7 @@ app.use(express.json({ limit: '20mb' }));
 // Endpoint to process uploaded image
 app.post('/upload_image', upload.single('image'), async (req, res) => {
     try {
+
         if (!model) {
             return res.status(500).json({ error: 'Model not loaded.' });
         }
@@ -37,16 +36,13 @@ app.post('/upload_image', upload.single('image'), async (req, res) => {
         const imageBuffer = req.file.buffer;
         const fileSize = req.file.size;
     
-        // Resize and preprocess the image using sharp and TensorFlow.js
-        const resizedImage = await sharp(imageBuffer)
-            .resize({ width: 224, height: 224 })
-            .toFormat('raw')
-            .toBuffer();
-
-        const tensor = tf.node.decodeImage(resizedImage)
+        // Resize and preprocess the image
+        const tensor = tf.node
+            .decodeImage(imageBuffer)
+            .resizeNearestNeighbor([224, 224])
             .expandDims()
-            .toFloat();
-    
+            .toFloat()
+
         // Perform prediction with the tensor
         const predictions = await model.predict(tensor).data();
     
