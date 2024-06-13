@@ -8,7 +8,6 @@ async function predict(req, res, model) {
         }
     
         const imageBuffer = req.file.buffer;
-        const fileSize = req.file.size;
     
         // Resize and preprocess the image
         const tensor = tf.node
@@ -26,14 +25,14 @@ async function predict(req, res, model) {
             result: rempahName, 
             score: score 
         });
-    
-        // Optionally, delete the file from memory after processing
         deleteUploadedFile(req.file);
-  
+        
     } catch (error) {
         // Handle errors
         console.error('Error processing image:', error);
         res.status(500).json({ error: error.message });
+    } finally{
+        deleteUploadedFile(req.file);
     }
 }
 
