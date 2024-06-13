@@ -1,4 +1,4 @@
-export const modelClass = {0: 'adas',
+const modelClass = {0: 'adas',
     1: 'andaliman',
     2: 'asam jawa',
     3: 'bawang bombai',
@@ -29,3 +29,5 @@ export const modelClass = {0: 'adas',
     28: 'serai',
     29: 'vanili',
     30: 'wijen'};
+
+module.exports = modelClass;
