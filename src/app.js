@@ -16,7 +16,7 @@ const upload = multer({
 // Load the TFLite model
 async function loadModel() {
     try {
-        model = await tf.loadGraphModel('https://storage.googleapis.com/rempahpedia-image-repository/model/model.json');
+        model = await tf.loadGraphModel(process.env.MODEL_URL);
         console.log('Model loaded successfully.');
     } catch (error) {
         console.error('Error loading model:', error);
