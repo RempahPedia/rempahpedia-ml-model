@@ -1,4 +1,5 @@
 const tf = require('@tensorflow/tfjs-node'); 
+const modelClass = require('./modelData');
 
 async function predict(req, res, model) {
     try {
@@ -18,12 +19,12 @@ async function predict(req, res, model) {
 
         // Perform prediction with the tensor
         const predictions = await model.predict(tensor).data();
+        const { rempahName, score } = determineResult(predictions);
     
         // Respond with a success message including file size and predictions
         res.status(200).json({ 
-            message: 'Image processed successfully.',
-            fileSize: fileSize, 
-            predictions: predictions 
+            result: rempahName, 
+            score: score 
         });
     
         // Optionally, delete the file from memory after processing
@@ -42,4 +43,21 @@ function deleteUploadedFile(file) {
     }
 }
 
-module.exports = { handleImageUpload };
+function determineResult(predictions){
+    let maxKey = null;
+    let maxValue = -Infinity;
+    
+    for (const [key, value] of Object.entries(predictions)) {
+        if (value > maxValue) {
+            maxValue = value;
+            maxKey = key;
+        }
+    }
+
+    return {
+        rempahName: modelClass[maxKey],
+        score: maxValue
+    };
+}
+
+module.exports = { predict };
