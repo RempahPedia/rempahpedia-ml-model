@@ -2,13 +2,21 @@ const express = require('express');
 const multer = require('multer');
 const tf = require('@tensorflow/tfjs-node');
 
-const {loadModel} = require('./loadModel');
-const { handleImageUpload } = require('./inferenceHandler');
+const { predict } = require('./inferenceHandler');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
 let model;
+
+async function loadModel() {
+  try {
+      model = await tf.loadGraphModel(process.env.MODEL_URL);
+      console.log('Model loaded successfully.');
+  } catch (error) {
+      console.error('Error loading model:', error);
+  }
+}
 
 // Configure multer with in-memory storage
 const upload = multer({ 
