@@ -19,13 +19,10 @@ async function predict(req, res, model) {
         // Perform prediction with the tensor
         const predictions = await model.predict(tensor).data();
         const { rempahName, score } = determineResult(predictions);
-    
-        // Respond with a success message including file size and predictions
-        res.status(200).json({ 
-            result: rempahName, 
-            score: score 
-        });
+        
         deleteUploadedFile(req.file);
+
+        return {rempahName, score};
         
     } catch (error) {
         // Handle errors

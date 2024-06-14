@@ -27,7 +27,32 @@ const upload = multer({
 app.use(express.json({ limit: '20mb' }));
 
 app.post('/predict', upload.single('image'), async (req, res) => {
-    predict(req, res, model);
+    const {rempahName, score} = await predict(req, res, model);
+
+    const idToken = req.cookies.access_token;
+
+    const payload = { rempah: rempahName };
+
+    // make an API calls to another service to send the result of prediction
+    if (idToken) {
+      const backendResponse = await axios.post('https://rempahpedia-6qjjxs4fia-et.a.run.app/api/prediciton/save', payload, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Cookie': `access_token=${idToken}`
+        },
+        withCredentials: true // Allow sending cookies
+      });
+
+      console.log('Response from backend service:', backendResponse.data);
+
+    } else {
+      console.log('No access token found');
+    }
+    
+    res.status(200).json({ 
+      result: rempahName, 
+      score: score 
+    });
 });
 
 app.get("/reload_model", async (req, res) =>{loadModel()})
