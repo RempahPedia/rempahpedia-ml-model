@@ -2,6 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const tf = require('@tensorflow/tfjs-node');
 const cookieParser = require('cookie-parser');
+const axios = require('axios');
 
 const { predict } = require('./inferenceHandler');
 
@@ -37,7 +38,7 @@ app.post('/predict', upload.single('image'), async (req, res) => {
 
     // make an API calls to another service to send the result of prediction
     if (idToken) {
-      const backendResponse = await axios.post('https://rempahpedia-6qjjxs4fia-et.a.run.app/api/prediciton/save', payload, {
+      const backendResponse = await axios.post('https://rempahpedia-6qjjxs4fia-et.a.run.app/api/prediction/save', payload, {
         headers: {
           'Content-Type': 'application/json',
           'Cookie': `access_token=${idToken}`
