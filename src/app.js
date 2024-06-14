@@ -1,6 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const tf = require('@tensorflow/tfjs-node');
+const cookieParser = require('cookie-parser');
 
 const { predict } = require('./inferenceHandler');
 
@@ -25,6 +26,7 @@ const upload = multer({
 });
 
 app.use(express.json({ limit: '20mb' }));
+app.use(cookieParser());
 
 app.post('/predict', upload.single('image'), async (req, res) => {
     const {rempahName, score} = await predict(req, res, model);
