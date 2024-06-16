@@ -10,7 +10,8 @@ COPY . .
 
 ENV MODEL_URL $MODEL_URL
 
+ENV PORT=8080
 EXPOSE 8080
 
 # Define the command to run the app
-CMD ["node", "src/server.js"]
+CMD ["node", "src/app.js"]
