@@ -11,7 +11,7 @@ async function predict(req, res, model) {
     
         // Resize and preprocess the image
         const tensor = tf.node
-            .decodeImage(imageBuffer)
+            .decodeImage(imageBuffer, 3)
             .resizeNearestNeighbor([224, 224])
             .expandDims()
             .toFloat();
